@@ -1,0 +1,41 @@
+{
+    "name": "dartmoon/laravel-localized-routes",
+    "description": "Localize laravel routes and views",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Dartmoon\\LaravelLocalized\\": "src/",
+            "Dartmoon\\LaravelLocalized\\App\\": "src/app"
+        },
+        "files": [
+            "src/helpers.php"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Dartmoon",
+            "email": "hello@dartmoon.io"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Dartmoon\\LaravelLocalized\\LaravelLocalizedServiceProvider"
+            ]
+        }
+    },
+    "require-dev": {
+        "orchestra/testbench": "^7.24",
+        "pestphp/pest": "^1.23",
+        "pestphp/pest-plugin-laravel": "^1.4",
+        "pestphp/pest-plugin-parallel": "^1.2"
+    },
+    "require": {
+        "dartmoon/laravel-route-helpers": "^1.0"
+    }
+}
