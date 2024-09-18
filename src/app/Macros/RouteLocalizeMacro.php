@@ -1,23 +1,22 @@
 <?php
 
-namespace Dartmoon\LaravelLocalized\App\Macros;
+namespace Dartmoon\LaravelLocalizedRoutes\App\Macros;
 
-use Dartmoon\LaravelLocalized\App\Contracts\MacroContract;
+use Dartmoon\LaravelLocalizedRoutes\App\Macros\Contracts\MacroContract;
 use Illuminate\Support\Facades\Route;
 
 class RouteLocalizeMacro implements MacroContract
 {
     protected static $methods = ['get', 'post', 'put', 'patch', 'delete', 'options', 'any', 'match'];
 
-    public static function register()
+    public static function register(): void
     {
         self::registerRouteLocalizeMacro();
 
         collect(self::$methods)->each(fn ($method) => self::registerRouteMethodLocalizeMacro($method));
-
     }
 
-    protected static function registerRouteLocalizeMacro()
+    protected static function registerRouteLocalizeMacro(): void
     {
         Route::macro('localize', function ($callback) {
 
@@ -36,7 +35,7 @@ class RouteLocalizeMacro implements MacroContract
         });
     }
 
-    protected static function registerRouteMethodLocalizeMacro($method)
+    protected static function registerRouteMethodLocalizeMacro(string $method): void
     {
         Route::macro($method . 'Localized', function ($uri, $action = null) use ($method) {
             // Let's obtain the locale

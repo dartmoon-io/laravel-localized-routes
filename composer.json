@@ -4,8 +4,8 @@
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "Dartmoon\\LaravelLocalized\\": "src/",
-            "Dartmoon\\LaravelLocalized\\App\\": "src/app"
+            "Dartmoon\\LaravelLocalizedRoutes\\": "src/",
+            "Dartmoon\\LaravelLocalizedRoutes\\App\\": "src/app"
         },
         "files": [
             "src/helpers.php"
@@ -25,7 +25,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Dartmoon\\LaravelLocalized\\LaravelLocalizedServiceProvider"
+                "Dartmoon\\LaravelLocalizedRoutes\\LaravelLocalizedRoutesServiceProvider"
             ]
         }
     },

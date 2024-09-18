@@ -1,70 +1,47 @@
 <?php
 
-namespace Dartmoon\LaravelLocalized;
+namespace Dartmoon\LaravelLocalizedRoutes;
 
 use Carbon\Carbon;
-use Dartmoon\LaravelLocalized\App\Macros\RouteLocalizeMacro;
+use Dartmoon\LaravelLocalizedRoutes\App\Macros\RouteLocalizeMacro;
+use Dartmoon\LaravelLocalizedRoutes\LocaleProviders\Contracts\LocaleProviderContract;
+use Dartmoon\LaravelLocalizedRoutes\LocaleProviders\DefaultLocaleProvider;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 
-class LaravelLocalizedServiceProvider extends ServiceProvider
+class LaravelLocalizedRoutesServiceProvider extends ServiceProvider
 {
-    public function register()
+    public function register(): void
     {
+        $this->registerServices();
         $this->registerMacros();
     }
 
-    public function boot()
+    public function boot(): void
     {
-        $this->setLocale();
-
         $this->loadConfigs();
+
+        $this->setRequestLocale();
     }
 
-    public function loadConfigs()
+    protected function loadConfigs(): void
     {
-        $this->mergeConfigFrom(__DIR__ . '/config/locale.php', 'locale');
+        $this->mergeConfigFrom(__DIR__ . '/config/locales.php', 'locales');
     }
 
-    public function registerMacros()
+    protected function registerServices(): void
+    {
+        $this->app->bind(LocaleProviderContract::class, DefaultLocaleProvider::class);
+        $this->app->singleton(Localization::class);
+    }
+
+    protected function registerMacros(): void
     {
         RouteLocalizeMacro::register();
     }
 
-    protected function setLocale()
+    protected function setRequestLocale(): void
     {
-        $locale = $this->getLocaleFromRequest();
-        $locale = $this->isAValidLocale($locale) ? $locale : $this->getDefaultLocale();
-
-        // Localize the app
-        $this->app->setLocale($locale);
-
-        // Localize carbon
-        Carbon::setLocale($locale);
-
-        // Set the default parameter to be included when creating urls
-        URL::defaults(['locale' => $locale]);
-    }
-
-    protected function isAValidLocale($locale)
-    {
-        return in_array($locale, $this->getAvailableLocales());
-    }
-
-    protected function getAvailableLocales()
-    {
-        return array_keys(config('locale.available'));
-    }
-
-    protected function getDefaultLocale()
-    {
-        return config('locale.default');
-    }
-
-    protected function getLocaleFromRequest()
-    {
-        $request = $this->app->make('request');
-        $segments = $request->segments();
-        return $segments[0] ?? null;
+        $this->app->get(RouteLocalizationService::class)->setRequestLocale();
     }
 }

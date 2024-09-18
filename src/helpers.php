@@ -1,60 +1,45 @@
 <?php
 
-use Illuminate\Support\Facades\URL;
+use Dartmoon\LaravelLocalizedRoutes\RouteLocalizationService;
 
 if (!function_exists('route_localized')) {
-    function route_localized($name, $parameters = [], $locale = null, $absolute = true)
+    function route_localized(string $name, mixed $parameters = [], string $locale = null, bool $absolute = true): string
     {
-        if (app()->getLocale() != $locale) {
-            $name = $locale . '.' . $name;
-        }
-
-        return route($name, $parameters, $absolute);
+        return app(RouteLocalizationService::class)->localizeRoute($name, $parameters, $locale, $absolute);
     }
 }
 
 if (!function_exists('url_localized')) {
-    function url_localized($url, $locale = null)
+    function url_localized(string $url, string $locale = null): string
     {
-        $path = parse_url($url, PHP_URL_PATH);
-        $path = ltrim($path, '/');
-        $pathExploded = explode('/', $path);
-
-        // Remove the locale if exists
-        if (count($pathExploded) > 1 && in_array($pathExploded[0], available_locales())) {
-            array_shift($pathExploded);
-        }
-
-        // Let's recompose the path and return it
-        $path = implode('/', $pathExploded);
-        return URL::to((is_default_locale($locale) ? '' : $locale) . '/' . $path);
+        return app(RouteLocalizationService::class)->localizeUrl($url, $locale);
     }
 }
 
 if (!function_exists('available_locales')){
-    function available_locales()
+    function available_locales(): array
     {
-        return array_keys(config('locale.available'));
+        return app(RouteLocalizationService::class)->getAvailableLocales();
     }
 }
 
 if (!function_exists('is_default_locale')) {
-    function is_default_locale($locale)
+    function is_default_locale(string $locale): bool
     {
-        return $locale === config('locale.default');
+        return app(RouteLocalizationService::class)->isDefaultLocale($locale);
     }
 }
 
 if (!function_exists('is_current_locale_default')) {
-    function is_current_locale_default()
+    function is_current_locale_default(): bool
     {
-        return is_default_locale(app()->getLocale());
+        return app(RouteLocalizationService::class)->isCurrentLocaleDefault();
     }
 }
 
 if (!function_exists('locale_name')) {
-    function locale_name($locale, $default = null)
+    function locale_name(string $locale, string $default = null): string
     {
-        return config('locale.available')[$locale] ?? $default ?? $locale;
+        return app(RouteLocalizationService::class)->getLocaleName($locale, $default);
     }
 }

@@ -2,7 +2,7 @@
 
 namespace Tests;
 
-use Dartmoon\LaravelLocalized\LaravelLocalizedServiceProvider;
+use Dartmoon\LaravelLocalizedRoutes\LaravelLocalizedRoutesServiceProvider;
 use Orchestra\Testbench\TestCase as BaseTestCase;
 
 class TestCase extends BaseTestCase
@@ -10,7 +10,7 @@ class TestCase extends BaseTestCase
     protected function getPackageProviders($app)
     {
         return [
-            LaravelLocalizedServiceProvider::class,
+            LaravelLocalizedRoutesServiceProvider::class,
         ];
     }
 
