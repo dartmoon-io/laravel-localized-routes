@@ -26,6 +26,7 @@ class LaravelLocalizedRoutesServiceProvider extends ServiceProvider
     protected function loadConfigs(): void
     {
         $this->mergeConfigFrom(__DIR__ . '/config/locales.php', 'locales');
+        $this->mergeConfigFrom(__DIR__ . '/config/localized-routes.php', 'localized-routes');
     }
 
     protected function registerServices(): void

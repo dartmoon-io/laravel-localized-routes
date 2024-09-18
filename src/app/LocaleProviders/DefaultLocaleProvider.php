@@ -6,11 +6,6 @@ use Dartmoon\LaravelLocalizedRoutes\App\LocaleProviders\Contracts\LocaleProvider
 
 class DefaultLocaleProvider implements LocaleProviderContract
 {
-    public function isDefaultLocale(string $locale): bool
-    {
-        return $locale === $this->getDefaultLocale();
-    }
-
     public function getDefaultLocale(): string|null
     {
         return config('locales.default') ?? null;

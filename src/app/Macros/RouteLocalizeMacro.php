@@ -19,16 +19,27 @@ class RouteLocalizeMacro implements MacroContract
     protected static function registerRouteLocalizeMacro(): void
     {
         Route::macro('localize', function ($callback) {
+            // Prefix the current route with the right locale
+            if (config('localized-routes.prefix_default_locale')) {
+                Route::group(['prefix' => app()->getLocale(), 'locale' => app()->getLocale()], $callback);
+                Route::group([], fn () => Route::get('{any}', fn () => redirect(default_locale() . '/' . request()->path())))->where('any', '.*');
+            } else {
+                // Add compatibility with route helper
+                Route::when(!is_current_locale_default(), fn () => Route::group(['prefix' => app()->getLocale(), 'locale' => app()->getLocale()], $callback));
+                Route::when(is_current_locale_default(), fn () => Route::group(['locale' => app()->getLocale()], $callback)); // Do not prefix the default locale
+            }
 
-            // Add compatibility with route helper
-            Route::when(!is_current_locale_default(), fn () => Route::group(['prefix' => app()->getLocale(), 'locale' => app()->getLocale()], $callback));
-            Route::when(is_current_locale_default(), fn () => Route::group(['locale' => app()->getLocale()], $callback));
-
+            // Register localized routes for the other available locales
             collect(available_locales())
                 ->filter(fn ($locale) => $locale != app()->getLocale())
                 ->each(function ($locale) use ($callback) {
-                    Route::when(is_default_locale($locale), fn () => Route::group(['as' => "{$locale}.", 'locale' => $locale], $callback));
-                    Route::when(!is_default_locale($locale), fn () => Route::group(['prefix' => $locale, 'as' => "{$locale}.", 'locale' => $locale], $callback));
+                    if (config('localized-routes.prefix_default_locale')) {
+                        Route::group(['prefix' => $locale, 'as' => "{$locale}.", 'locale' => $locale], $callback);
+                    } else {
+                        // Add compatibility with route helper
+                        Route::when(!is_default_locale($locale), fn () => Route::group(['prefix' => $locale, 'as' => "{$locale}.", 'locale' => $locale], $callback));
+                        Route::when(is_default_locale($locale), fn () => Route::group(['as' => "{$locale}.", 'locale' => $locale], $callback)); // Do not prefix the default locale
+                    }
                 });
 
             return $this;

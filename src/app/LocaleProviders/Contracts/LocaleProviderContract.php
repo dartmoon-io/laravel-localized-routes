@@ -4,8 +4,6 @@ namespace Dartmoon\LaravelLocalizedRoutes\App\LocaleProviders\Contracts;
 
 interface LocaleProviderContract
 {
-    public function isDefaultLocale(string $locale): bool;
-
     public function getDefaultLocale(): string|null;
 
     public function getAvailableLocales(): array;

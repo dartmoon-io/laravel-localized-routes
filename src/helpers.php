@@ -43,3 +43,11 @@ if (!function_exists('locale_name')) {
         return app(RouteLocalizationService::class)->getLocaleName($locale, $default);
     }
 }
+
+if (!function_exists('default_locale')) {
+    function default_locale(): string
+    {
+        return app(RouteLocalizationService::class)->getDefaultLocale();
+    }
+}
+

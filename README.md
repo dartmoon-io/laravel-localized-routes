@@ -61,8 +61,9 @@ First you need to publish the config.
 php artisan vendor:publish --provider="Dartmoon\LaravelLocalizedRoutes\LaravelLocalizedRoutesServiceProvider"
 ```
 
-Then you will find a new `locales.php` file inside your `config` folder.
+Then you will find two new files (`locales.php` and `localized-routes.php`) files inside your `config` folder.
 
+The file `locales.php` contains the list of the available locales. By default it is as follows:
 ```php
 <?php
 /**
@@ -80,6 +81,21 @@ return [
 ```
 
 You can now edit the `available` with the locale you want to enable.
+
+The file `localized-routes.php` contains the configuration of the package. By default it is as follows:
+```php
+<?php
+/**
+ * Return the configuration for the localized routes
+ */
+
+return [
+    'prefix_default' => false, // If true the default locale will be prefixed to the routes
+];
+```
+
+You can now edit the `prefix_default` to `true` if you want to prefix the default locale to the routes.
+
 
 ## Named routes
 This package supports named routes out of the box and adds some useful prefixes.
@@ -119,6 +135,66 @@ route('en.home'); // Will return '/home'. This route will not be defined if the 
 - `is_current_locale_default` returns true if the current locale is the default one
 
 - `locale_name($locale, $default = null)` returns the locale name for the specified locale
+
+- `default_locale()` returns the default locale
+
+## Using a different LocaleProvider
+By default the package uses the `Dartmoon\LaravelLocalizedRoutes\App\LocaleProviders\DefaultLocaleProvider` to get the current locale from the `locales.php` config file. 
+
+If you want to use a different provider to get the available locales from somewhere else, you can do so by creating a new class that implements the `Dartmoon\LaravelLocalizedRoutes\App\LocaleProviders\Contracts\LocaleProviderContract` interface and then binding it in the service container.
+
+```php
+<?php
+
+namespace App\LocaleProviders;
+
+use Dartmoon\LaravelLocalizedRoutes\App\LocaleProviders\Contracts\LocaleProviderContract;
+
+class MyCustomLocaleProvider implements LocaleProviderContract
+{
+    public function getDefaultLocale(): string
+    {
+        return 'en';
+    }
+
+    public function getAvailableLocales(): array
+    {
+        return [
+            'en' => 'EN',
+            'it' => 'IT',
+        ];
+    }
+
+    public function getLocaleName(string $locale, string $default = null): string
+    {
+        return $this->getAvailableLocales()[$locale] ?? $default;
+    }
+}
+```
+
+Then you can bind it in the service container in the `AppServiceProvider` class.
+
+```php
+<?php
+
+namespace App\Providers;
+
+use App\LocaleProviders\MyCustomLocaleProvider;
+use Dartmoon\LaravelLocalizedRoutes\App\LocaleProviders\Contracts\LocaleProviderContract;
+
+use Illuminate\Support\ServiceProvider;
+
+class AppServiceProvider extends ServiceProvider
+{
+    public function register()
+    {
+        $this->app->bind(
+            LocaleProviderContract::class,
+            MyCustomLocaleProvider::class
+        );
+    }
+}
+```
 
 ## License
 

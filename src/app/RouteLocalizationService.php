@@ -46,7 +46,7 @@ class RouteLocalizationService
 
     public function isDefaultLocale(string $locale): bool
     {
-        return $this->provider->isDefaultLocale($locale);
+        return $locale === $this->provider->getDefaultLocale($locale);
     }
 
     protected function isAValidLocale(string $locale = null): bool
@@ -54,7 +54,7 @@ class RouteLocalizationService
         return !is_null($locale) && in_array($locale, $this->getAvailableLocales());
     }
 
-    protected function getDefaultLocale(): string|null
+    public function getDefaultLocale(): string|null
     {
         return $this->provider->getDefaultLocale();
     }
