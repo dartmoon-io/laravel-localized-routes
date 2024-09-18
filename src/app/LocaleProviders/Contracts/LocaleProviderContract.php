@@ -1,6 +1,6 @@
 <?php
 
-namespace Dartmoon\LaravelLocalizedRoutes\LocaleProviders\Contracts;
+namespace Dartmoon\LaravelLocalizedRoutes\App\LocaleProviders\Contracts;
 
 interface LocaleProviderContract
 {

@@ -1,6 +1,6 @@
 <?php
 
-use Dartmoon\LaravelLocalizedRoutes\RouteLocalizationService;
+use Dartmoon\LaravelLocalizedRoutes\App\RouteLocalizationService;
 
 if (!function_exists('route_localized')) {
     function route_localized(string $name, mixed $parameters = [], string $locale = null, bool $absolute = true): string

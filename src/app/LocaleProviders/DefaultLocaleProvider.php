@@ -1,12 +1,12 @@
 <?php
 
-namespace Dartmoon\LaravelLocalizedRoutes\LocaleProviders;
+namespace Dartmoon\LaravelLocalizedRoutes\App\LocaleProviders;
 
-use Dartmoon\LaravelLocalizedRoutes\LocaleProviders\Contracts\LocaleProviderContract;
+use Dartmoon\LaravelLocalizedRoutes\App\LocaleProviders\Contracts\LocaleProviderContract;
 
 class DefaultLocaleProvider implements LocaleProviderContract
 {
-    public function isDefaultLocale($locale): bool
+    public function isDefaultLocale(string $locale): bool
     {
         return $locale === $this->getDefaultLocale();
     }

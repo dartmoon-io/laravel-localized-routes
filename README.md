@@ -21,7 +21,7 @@ Route::localize(function () {
 
 E.g. if this is your route file
 ```php
-Route::localize(function () {
+Route::group(function () {
     Route::get('/home', ...);
     Route::post('/update-profile', ...);
 
@@ -58,10 +58,10 @@ return [
 First you need to publish the config.
 
 ```bash
-php artisan vendor:publish --provider="Dartmoon\LaravelLocalized\LaravelLocalizedServiceProvider"
+php artisan vendor:publish --provider="Dartmoon\LaravelLocalizedRoutes\LaravelLocalizedRoutesServiceProvider"
 ```
 
-Then you will find a new `locale.php` file inside your `config.php` folder.
+Then you will find a new `locales.php` file inside your `config` folder.
 
 ```php
 <?php

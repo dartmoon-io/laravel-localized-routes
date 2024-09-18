@@ -2,11 +2,10 @@
 
 namespace Dartmoon\LaravelLocalizedRoutes;
 
-use Carbon\Carbon;
 use Dartmoon\LaravelLocalizedRoutes\App\Macros\RouteLocalizeMacro;
-use Dartmoon\LaravelLocalizedRoutes\LocaleProviders\Contracts\LocaleProviderContract;
-use Dartmoon\LaravelLocalizedRoutes\LocaleProviders\DefaultLocaleProvider;
-use Illuminate\Support\Facades\URL;
+use Dartmoon\LaravelLocalizedRoutes\App\LocaleProviders\Contracts\LocaleProviderContract;
+use Dartmoon\LaravelLocalizedRoutes\App\LocaleProviders\DefaultLocaleProvider;
+use Dartmoon\LaravelLocalizedRoutes\App\RouteLocalizationService;
 use Illuminate\Support\ServiceProvider;
 
 class LaravelLocalizedRoutesServiceProvider extends ServiceProvider
@@ -32,7 +31,7 @@ class LaravelLocalizedRoutesServiceProvider extends ServiceProvider
     protected function registerServices(): void
     {
         $this->app->bind(LocaleProviderContract::class, DefaultLocaleProvider::class);
-        $this->app->singleton(Localization::class);
+        $this->app->singleton(RouteLocalizationService::class);
     }
 
     protected function registerMacros(): void

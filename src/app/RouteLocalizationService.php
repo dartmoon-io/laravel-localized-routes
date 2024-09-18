@@ -1,9 +1,9 @@
 <?php
 
-namespace Dartmoon\LaravelLocalizedRoutes;
+namespace Dartmoon\LaravelLocalizedRoutes\App;
 
 use Carbon\Carbon;
-use Dartmoon\LaravelLocalizedRoutes\LocaleProviders\Contracts\LocaleProviderContract;
+use Dartmoon\LaravelLocalizedRoutes\App\LocaleProviders\Contracts\LocaleProviderContract;
 use Illuminate\Support\Facades\URL;
 
 class RouteLocalizationService
@@ -49,9 +49,9 @@ class RouteLocalizationService
         return $this->provider->isDefaultLocale($locale);
     }
 
-    protected function isAValidLocale(string $locale): bool
+    protected function isAValidLocale(string $locale = null): bool
     {
-        return in_array($locale, $this->getAvailableLocales());
+        return !is_null($locale) && in_array($locale, $this->getAvailableLocales());
     }
 
     protected function getDefaultLocale(): string|null
