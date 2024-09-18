@@ -55,12 +55,25 @@ class RouteLocalizeMacro implements MacroContract
                 $locale = $group['locale'] ?? $locale;
             }
 
-            $translatedUri = trans("routes.$uri", [], $locale);
+            // All the possible translations for the uri
+            $transKeys = [
+                "routes.$uri",
+                "routes." . ltrim($uri, '/'),
+                "routes." . rtrim($uri, '/'),
+                "routes." . trim($uri, '/'),
+                "routes./" . trim($uri, '/'),
+                "routes." . trim($uri, '/') . "/",
+                "routes./" . trim($uri, '/') . "/",
+            ];
 
-            // if we could find a translation for the uri, then we use
-            // the original uri
-            if ($translatedUri == "routes.$uri") {
-                $translatedUri = $uri;
+            $translatedUri = $uri;
+            foreach ($transKeys as $transKey) {
+                $tranlatedUriTemp = trans($transKey, [], $locale);
+
+                if ($tranlatedUriTemp != $transKey) {
+                    $translatedUri = $tranlatedUriTemp;
+                    break;
+                }
             }
 
             return Route::$method($translatedUri, $action);
