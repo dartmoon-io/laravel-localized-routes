@@ -128,6 +128,8 @@ route('en.home'); // Will return '/home'. This route will not be defined if the 
 
 - `url_localized($url, $locale = null)` it allows you to localize an URL
 
+- `current_localized($locale = null)` it returns the current URL or route localized
+
 - `available_locales()` returns the available locales, without their names
 
 - `is_default_locale($locale)` returns true if the specified locale is the default one
@@ -137,6 +139,8 @@ route('en.home'); // Will return '/home'. This route will not be defined if the 
 - `locale_name($locale, $default = null)` returns the locale name for the specified locale
 
 - `default_locale()` returns the default locale
+
+- `available_alternates()` returns the available alternates for the available locales
 
 ## Using a different LocaleProvider
 By default the package uses the `Dartmoon\LaravelLocalizedRoutes\App\LocaleProviders\DefaultLocaleProvider` to get the current locale from the `locales.php` config file. 
