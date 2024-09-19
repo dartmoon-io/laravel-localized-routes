@@ -51,3 +51,10 @@ if (!function_exists('default_locale')) {
     }
 }
 
+if (!function_exists('available_alternates')) {
+    function available_alternates(): array
+    {
+        return app(RouteLocalizationService::class)->getAvailableAlternates();
+    }
+}
+
