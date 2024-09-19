@@ -5,7 +5,7 @@ namespace Dartmoon\LaravelLocalizedRoutes\App;
 use Carbon\Carbon;
 use Dartmoon\LaravelLocalizedRoutes\App\LocaleProviders\Contracts\LocaleProviderContract;
 use Exception;
-use Illuminate\Routing\Route;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\URL;
 
 class RouteLocalizationService
@@ -74,7 +74,7 @@ class RouteLocalizationService
     public function getAvailableAlternates(): array
     {
         return collect($this->getAvailableLocales())
-            ->mapWithKeys(fn ($locale) => [$locale => $this->localizeCurrentUrl($locale)])
+            ->mapWithKeys(fn ($locale) => [$locale => $this->localizeCurrent($locale)])
             ->toArray();
     }
 
