@@ -16,6 +16,13 @@ if (!function_exists('url_localized')) {
     }
 }
 
+if (!function_exists('current_localized')) {
+    function current_localized(string $locale): array
+    {
+        return app(RouteLocalizationService::class)->localizeCurrent($locale);
+    }
+}
+
 if (!function_exists('available_locales')){
     function available_locales(): array
     {
