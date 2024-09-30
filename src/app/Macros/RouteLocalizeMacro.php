@@ -22,7 +22,14 @@ class RouteLocalizeMacro implements MacroContract
             // Prefix the current route with the right locale
             if (config('localized-routes.prefix_default_locale')) {
                 Route::group(['prefix' => app()->getLocale(), 'locale' => app()->getLocale()], $callback);
-                Route::redirect('/{any}', '/' . default_locale() . '/' . request()->path())->where('any', '.*');
+
+                $isCurrentPrefixedByALocale = array_reduce(available_locales(), function ($carry, $locale) {
+                    return $carry || str_starts_with(request()->path(), $locale . '/');
+                }, false);
+                
+                if (!$isCurrentPrefixedByALocale) {
+                    Route::redirect('/{any}', '/' . default_locale() . '/' . request()->path())->where('any', '.*')->fallback();
+                }
             } else {
                 // Add compatibility with route helper
                 Route::when(!is_current_locale_default(), fn () => Route::group(['prefix' => app()->getLocale(), 'locale' => app()->getLocale()], $callback));
