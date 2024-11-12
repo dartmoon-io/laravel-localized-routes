@@ -26,7 +26,13 @@ class RouteLocalizationService
             $name = $locale . '.' . $name;
         }
 
-        return route($name, $parameters, $absolute);
+        $currentLocale = $this->app->getLocale();
+        $this->app->setLocale($locale);
+        
+        $localizedRoute = route($name, $parameters, $absolute);
+
+        $this->app->setLocale($currentLocale);
+        return $localizedRoute;
     }
 
     public function localizeUrl(string $url, string $locale = null): string
