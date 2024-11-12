@@ -62,6 +62,7 @@ class RouteLocalizeMacro implements MacroContract
     protected static function registerRouteLocalizeMacroForOctane(): void
     {
         Route::macro('localize', function ($callback) {
+            $this->callbackToLocalize ??= [];
             $this->callbackToLocalize[] = [
                 'groupStack' => $this->groupStack,
                 'callback' => $callback,
@@ -86,7 +87,7 @@ class RouteLocalizeMacro implements MacroContract
     protected static function registerRouteRegisterLocalizedRoutesForLocaleForOctane(): void
     {
         Route::macro('registerLocalizedRoutesForLocale', function ($locale) {
-            collect($this->callbackToLocalize)
+            collect($this->callbackToLocalize ?? [])
                 ->each(function ($callback) use ($locale) {
                     $this->groupStack = $callback['groupStack'];
                     // Prefix the current route with the right locale
