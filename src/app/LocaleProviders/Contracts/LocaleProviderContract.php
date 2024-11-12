@@ -6,7 +6,7 @@ interface LocaleProviderContract
 {
     public function getDefaultLocale(): string|null;
 
-    public function getAvailableLocales(): array;
+    public function getAvailableLocales(bool $caching = false): array;
 
     public function getLocaleName(string $locale, string $default = null): string;
 }

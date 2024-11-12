@@ -200,6 +200,28 @@ class AppServiceProvider extends ServiceProvider
 }
 ```
 
+## Using Laravel Octane
+If you are using Laravel Octane you need to register the following listener to the `config/octane.php` file.
+
+```php
+<?php
+
+return [
+    ...
+    'listeners' => [
+        ...
+        RequestReceived::class => [
+            ...
+            \Dartmoon\LaravelLocalizedRoutes\App\Listeners\PrepareRoutesForNextRequest::class,
+        ],
+        ...    
+    ],
+    ...
+];
+```
+
+And then you can use the package as usual.
+
 ## License
 
 This project is licensed under the MIT License - see the LICENSE.md file for details

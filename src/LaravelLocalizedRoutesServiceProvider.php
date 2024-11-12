@@ -20,7 +20,12 @@ class LaravelLocalizedRoutesServiceProvider extends ServiceProvider
     {
         $this->loadConfigs();
 
-        $this->setRequestLocale();
+        // If the application is server by octane,
+        // then we cannot set the request locale
+        // from the provider 
+        if (!$this->runningInOctane()) {
+            $this->setLocaleFromRequest();
+        }
     }
 
     protected function loadConfigs(): void
@@ -32,7 +37,6 @@ class LaravelLocalizedRoutesServiceProvider extends ServiceProvider
     protected function registerServices(): void
     {
         $this->app->bind(LocaleProviderContract::class, DefaultLocaleProvider::class);
-        $this->app->singleton(RouteLocalizationService::class);
     }
 
     protected function registerMacros(): void
@@ -40,8 +44,13 @@ class LaravelLocalizedRoutesServiceProvider extends ServiceProvider
         RouteLocalizeMacro::register();
     }
 
-    protected function setRequestLocale(): void
+    protected function setLocaleFromRequest(): void
     {
-        $this->app->get(RouteLocalizationService::class)->setRequestLocale();
+        $this->app->get(RouteLocalizationService::class)->setLocaleFromRequest();
+    }
+
+    protected function runningInOctane(): bool
+    {
+        return isset($_SERVER['LARAVEL_OCTANE']) && ((int)$_SERVER['LARAVEL_OCTANE'] === 1);
     }
 }

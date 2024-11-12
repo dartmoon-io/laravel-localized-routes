@@ -5,12 +5,16 @@ namespace Dartmoon\LaravelLocalizedRoutes\App;
 use Carbon\Carbon;
 use Dartmoon\LaravelLocalizedRoutes\App\LocaleProviders\Contracts\LocaleProviderContract;
 use Exception;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\URL;
 
 class RouteLocalizationService
 {
     public function __construct(
+        protected Application $app,
+        protected Request $request,
         protected LocaleProviderContract $provider
     ) {
         //
@@ -18,7 +22,7 @@ class RouteLocalizationService
 
     public function localizeRoute(string $name, mixed $parameters = [], string $locale = null, bool $absolute = true): string
     {
-        if (app()->getLocale() != $locale) {
+        if ($this->app->getLocale() != $locale) {
             $name = $locale . '.' . $name;
         }
 
@@ -43,7 +47,7 @@ class RouteLocalizationService
 
     public function isCurrentLocaleDefault(): bool
     {
-        return $this->isDefaultLocale(app()->getLocale());
+        return $this->isDefaultLocale($this->app->getLocale());
     }
 
     public function isDefaultLocale(string $locale): bool
@@ -61,9 +65,9 @@ class RouteLocalizationService
         return $this->provider->getDefaultLocale();
     }
 
-    public function getAvailableLocales(): array
+    public function getAvailableLocales(bool $caching = false): array
     {
-        return $this->provider->getAvailableLocales();
+        return $this->provider->getAvailableLocales($caching);
     }
 
     public function getLocaleName(string $locale, string $default = null): string
@@ -103,13 +107,13 @@ class RouteLocalizationService
         return $this->localizeUrl(URL::full(), $locale);
     }
 
-    public function setRequestLocale(): void
+    public function setLocaleFromRequest(): void
     {
         $locale = $this->getLocaleFromRequest();
         $locale = $this->isAValidLocale($locale) ? $locale : $this->getDefaultLocale();
 
         // Localize the app
-        app()->setLocale($locale);
+        $this->app->setLocale($locale);
 
         // Localize carbon
         Carbon::setLocale($locale);
@@ -118,10 +122,9 @@ class RouteLocalizationService
         URL::defaults(['locale' => $locale]);
     }
 
-    protected function getLocaleFromRequest(): string|null
+    public function getLocaleFromRequest(): string|null
     {
-        $request = app()->make('request');
-        $segments = $request->segments();
+        $segments = $this->request->segments();
         return $segments[0] ?? null;
     }
 }

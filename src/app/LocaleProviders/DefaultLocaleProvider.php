@@ -11,7 +11,7 @@ class DefaultLocaleProvider implements LocaleProviderContract
         return config('locales.default') ?? null;
     }
 
-    public function getAvailableLocales(): array
+    public function getAvailableLocales(bool $caching = false): array
     {
         return array_keys(config('locales.available') ?? []);
     }
