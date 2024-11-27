@@ -102,7 +102,7 @@ class RouteLocalizationService
                 Route::currentRouteName(),
                 Route::current()->parameters(),
                 $locale
-            );
+            ) . ($this->request->query() ? '?' . http_build_query($this->request->query()) : '');
         } catch (Exception $e) {
             return $this->localizeCurrentUrl($locale);
         }
