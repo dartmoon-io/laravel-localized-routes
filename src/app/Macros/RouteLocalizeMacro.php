@@ -14,9 +14,11 @@ class RouteLocalizeMacro implements MacroContract
     {
         if (self::runningInOctane()) {
             self::registerRouteLocalizeMacroForOctane();
+            self::registerRouteLocalizeCurrentLocaleMacroForOctane();
             self::registerRouteRegisterLocalizedRoutesForLocaleForOctane();
         } else {
             self::registerRouteLocalizeMacro();
+            self::registerRouteLocalizeCurrentLocaleMacro();
         }
         
         collect(self::$methods)->each(fn ($method) => self::registerRouteMethodLocalizeMacro($method));
@@ -59,11 +61,33 @@ class RouteLocalizeMacro implements MacroContract
         });
     }
 
+    protected static function registerRouteLocalizeCurrentLocaleMacro(): void
+    {
+        Route::macro('localizeCurrentLocale', function ($callback) {
+            Route::group(['prefix' => app()->getLocale(), 'locale' => app()->getLocale()], $callback);
+
+            return $this;
+        });
+    }
+
     protected static function registerRouteLocalizeMacroForOctane(): void
     {
         Route::macro('localize', function ($callback) {
             $this->callbackToLocalize ??= [];
             $this->callbackToLocalize[] = [
+                'groupStack' => $this->groupStack,
+                'callback' => $callback,
+            ];
+
+            return $this;
+        });
+    }
+
+    protected static function registerRouteLocalizeCurrentLocaleMacroForOctane(): void
+    {
+        Route::macro('localizeCurrentLocale', function ($callback) {
+            $this->callbackToLocalizeToCurrentLocale ??= [];
+            $this->callbackToLocalizeToCurrentLocale[] = [
                 'groupStack' => $this->groupStack,
                 'callback' => $callback,
             ];
@@ -109,6 +133,14 @@ class RouteLocalizeMacro implements MacroContract
                                 Route::when(is_default_locale($locale), fn () => Route::group(['as' => "{$locale}.", 'locale' => $locale], $callback['callback'])); // Do not prefix the default locale
                             }
                         });
+                });
+
+            collect($this->callbackToLocalizeToCurrentLocale ?? [])
+                ->each(function ($callback) use ($currentLocale) {
+                    // Restore the group stack
+                    $this->groupStack = $callback['groupStack'];
+
+                    Route::group(['prefix' => $currentLocale, 'locale' => $currentLocale], $callback['callback']);
                 });
 
             Route::getRoutes()->refreshNameLookups();

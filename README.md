@@ -41,6 +41,15 @@ Route::localize(function () {
 });
 
 Route::get('/external');
+
+// If you are using livewire or you need some routes 
+// prefixed with the current locale
+Route::localizeCurrentLocale(function () {
+    Livewire::setUpdateRoute(function ($handle) {
+        return Route::post('livewire/update', $handle);
+    });
+});
+
 ```
 
 3. You can now translate all your routes using the Laravel translation service. Inside the your lang folder (eg. `/lang/it`) create a `routes.php` file.
