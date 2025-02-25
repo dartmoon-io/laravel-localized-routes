@@ -12,65 +12,14 @@ class RouteLocalizeMacro implements MacroContract
 
     public static function register(): void
     {
-        if (self::runningInOctane()) {
-            self::registerRouteLocalizeMacroForOctane();
-            self::registerRouteLocalizeCurrentLocaleMacroForOctane();
-            self::registerRouteRegisterLocalizedRoutesForLocaleForOctane();
-        } else {
-            self::registerRouteLocalizeMacro();
-            self::registerRouteLocalizeCurrentLocaleMacro();
-        }
+        self::registerRouteLocalizeMacro();
+        self::registerRouteLocalizeCurrentLocaleMacro();
+        self::registerRouteRegisterLocalizedRoutesForLocale();
         
         collect(self::$methods)->each(fn ($method) => self::registerRouteMethodLocalizeMacro($method));
     }
 
     protected static function registerRouteLocalizeMacro(): void
-    {
-        Route::macro('localize', function ($callback) {
-            // Prefix the current route with the right locale
-            if (config('localized-routes.prefix_default_locale')) {
-                Route::group(['prefix' => app()->getLocale(), 'locale' => app()->getLocale()], $callback);
-
-                $isCurrentPrefixedByALocale = array_reduce(available_locales(), function ($carry, $locale) {
-                    return $carry || str_starts_with(request()->path(), $locale . '/') || request()->path() == $locale;
-                }, false);
-                
-                if (!$isCurrentPrefixedByALocale) {
-                    Route::redirect('/{any}', '/' . default_locale() . '/' . request()->path())->where('any', '.*')->fallback();
-                }
-            } else {
-                // Add compatibility with route helper
-                Route::when(!is_current_locale_default(), fn () => Route::group(['prefix' => app()->getLocale(), 'locale' => app()->getLocale()], $callback));
-                Route::when(is_current_locale_default(), fn () => Route::group(['locale' => app()->getLocale()], $callback)); // Do not prefix the default locale
-            }
-
-            // Register localized routes for the other available locales
-            collect(available_locales())
-                ->filter(fn ($locale) => $locale != app()->getLocale())
-                ->each(function ($locale) use ($callback) {
-                    if (config('localized-routes.prefix_default_locale')) {
-                        Route::group(['prefix' => $locale, 'as' => "{$locale}.", 'locale' => $locale], $callback);
-                    } else {
-                        // Add compatibility with route helper
-                        Route::when(!is_default_locale($locale), fn () => Route::group(['prefix' => $locale, 'as' => "{$locale}.", 'locale' => $locale], $callback));
-                        Route::when(is_default_locale($locale), fn () => Route::group(['as' => "{$locale}.", 'locale' => $locale], $callback)); // Do not prefix the default locale
-                    }
-                });
-
-            return $this;
-        });
-    }
-
-    protected static function registerRouteLocalizeCurrentLocaleMacro(): void
-    {
-        Route::macro('localizeCurrentLocale', function ($callback) {
-            Route::group(['prefix' => app()->getLocale(), 'locale' => app()->getLocale()], $callback);
-
-            return $this;
-        });
-    }
-
-    protected static function registerRouteLocalizeMacroForOctane(): void
     {
         Route::macro('localize', function ($callback) {
             $this->callbackToLocalize ??= [];
@@ -83,7 +32,7 @@ class RouteLocalizeMacro implements MacroContract
         });
     }
 
-    protected static function registerRouteLocalizeCurrentLocaleMacroForOctane(): void
+    protected static function registerRouteLocalizeCurrentLocaleMacro(): void
     {
         Route::macro('localizeCurrentLocale', function ($callback) {
             $this->callbackToLocalizeToCurrentLocale ??= [];
@@ -96,7 +45,7 @@ class RouteLocalizeMacro implements MacroContract
         });
     }
 
-    protected static function registerRouteRegisterLocalizedRoutesForLocaleForOctane(): void
+    protected static function registerRouteRegisterLocalizedRoutesForLocale(): void
     {
         Route::macro('registerLocalizedRoutesForLocale', function ($currentLocale) {
             collect($this->callbackToLocalize ?? [])
@@ -182,10 +131,5 @@ class RouteLocalizeMacro implements MacroContract
 
             return Route::$method($translatedUri, $action);
         });
-    }
-    
-    protected static function runningInOctane(): bool
-    {
-        return isset($_SERVER['LARAVEL_OCTANE']) && ((int)$_SERVER['LARAVEL_OCTANE'] === 1);
     }
 }

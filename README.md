@@ -229,7 +229,9 @@ return [
 ];
 ```
 
-And then you can use the package as usual.
+You must cache the routes using the `php artisan route:cache` command otherwise it will not work as expected.
+
+After this you can use the package as usual.
 
 ## License
 
