@@ -3,14 +3,14 @@
 use Dartmoon\LaravelLocalizedRoutes\App\RouteLocalizationService;
 
 if (!function_exists('route_localized')) {
-    function route_localized(string $name, mixed $parameters = [], string $locale = null, bool $absolute = true): string
+    function route_localized(string $name, mixed $parameters = [], ?string $locale = null, bool $absolute = true): string
     {
         return app(RouteLocalizationService::class)->localizeRoute($name, $parameters, $locale, $absolute);
     }
 }
 
 if (!function_exists('url_localized')) {
-    function url_localized(string $url, string $locale = null): string
+    function url_localized(string $url, ?string $locale = null): string
     {
         return app(RouteLocalizationService::class)->localizeUrl($url, $locale);
     }
@@ -45,7 +45,7 @@ if (!function_exists('is_current_locale_default')) {
 }
 
 if (!function_exists('locale_name')) {
-    function locale_name(string $locale, string $default = null): string
+    function locale_name(string $locale, ?string $default = null): string
     {
         return app(RouteLocalizationService::class)->getLocaleName($locale, $default);
     }
