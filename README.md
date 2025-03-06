@@ -133,11 +133,11 @@ route('en.home'); // Will return '/home'. This route will not be defined if the 
 ```
 
 ## Helpers
-- `route_localized($name, $parameters = [], $locale = null, $absolute = true)` it behaves exactly as the `route` helper of Laravel, but it allows you to specify the locale
+- `route_localized($name, $parameters = [], ?$locale = null, $absolute = true)` it behaves exactly as the `route` helper of Laravel, but it allows you to specify the locale
 
-- `url_localized($url, $locale = null)` it allows you to localize an URL
+- `url_localized($url, ?$locale = null)` it allows you to localize an URL
 
-- `current_localized($locale = null)` it returns the current URL or route localized
+- `current_localized(?$locale = null)` it returns the current URL or route localized
 
 - `available_locales()` returns the available locales, without their names
 
@@ -145,7 +145,7 @@ route('en.home'); // Will return '/home'. This route will not be defined if the 
 
 - `is_current_locale_default` returns true if the current locale is the default one
 
-- `locale_name($locale, $default = null)` returns the locale name for the specified locale
+- `locale_name($locale, ?$default = null)` returns the locale name for the specified locale
 
 - `default_locale()` returns the default locale
 
@@ -178,7 +178,7 @@ class MyCustomLocaleProvider implements LocaleProviderContract
         ];
     }
 
-    public function getLocaleName(string $locale, string $default = null): string
+    public function getLocaleName(string $locale, ?string $default = null): string
     {
         return $this->getAvailableLocales()[$locale] ?? $default;
     }

@@ -1,54 +1,48 @@
 <?php
 
-namespace Dartmoon\LaravelLocalizedRoutes\App\Macros;
+namespace Dartmoon\LaravelLocalizedRoutes\App\Mixins;
 
-use Dartmoon\LaravelLocalizedRoutes\App\Macros\Contracts\MacroContract;
 use Dartmoon\LaravelLocalizedRoutes\App\RouteLocalizationService;
 use Illuminate\Support\Facades\Route;
 
-class RouteLocalizeMacro implements MacroContract
+class RouteLocalizeMixin
 {
-    protected static $methods = ['get', 'post', 'put', 'patch', 'delete', 'options', 'any', 'match'];
+    public array $callbackToLocalize = [];
+    public array $callbackToLocalizeToCurrentLocale = [];
 
-    public static function register(): void
+    public function localize()
     {
-        self::registerRouteLocalizeMacro();
-        self::registerRouteLocalizeCurrentLocaleMacro();
-        self::registerRouteRegisterLocalizedRoutesForLocale();
-        
-        collect(self::$methods)->each(fn ($method) => self::registerRouteMethodLocalizeMacro($method));
-    }
-
-    protected static function registerRouteLocalizeMacro(): void
-    {
-        Route::macro('localize', function ($callback) {
-            $this->callbackToLocalize ??= [];
-            $this->callbackToLocalize[] = [
+        $that = $this;
+        return function ($callback) use ($that) {
+            $that->callbackToLocalize ??= [];
+            $that->callbackToLocalize[] = [
                 'groupStack' => $this->groupStack,
                 'callback' => $callback,
             ];
 
             return $this;
-        });
+        };
     }
 
-    protected static function registerRouteLocalizeCurrentLocaleMacro(): void
+    public function localizeCurrentLocale()
     {
-        Route::macro('localizeCurrentLocale', function ($callback) {
-            $this->callbackToLocalizeToCurrentLocale ??= [];
-            $this->callbackToLocalizeToCurrentLocale[] = [
+        $that = $this;
+        return function ($callback) use ($that) {
+            $that->callbackToLocalizeToCurrentLocale ??= [];
+            $that->callbackToLocalizeToCurrentLocale[] = [
                 'groupStack' => $this->groupStack,
                 'callback' => $callback,
             ];
 
             return $this;
-        });
+        };
     }
 
-    protected static function registerRouteRegisterLocalizedRoutesForLocale(): void
+    public function registerLocalizedRoutesForLocale()
     {
-        Route::macro('registerLocalizedRoutesForLocale', function ($currentLocale) {
-            collect($this->callbackToLocalize ?? [])
+        $that = $this;
+        return function ($currentLocale) use ($that) {
+            collect($that->callbackToLocalize ?? [])
                 ->each(function ($callback) use ($currentLocale) {
                     // Restore the group stack
                     $this->groupStack = $callback['groupStack'];
@@ -84,7 +78,7 @@ class RouteLocalizeMacro implements MacroContract
                         });
                 });
 
-            collect($this->callbackToLocalizeToCurrentLocale ?? [])
+            collect($that->callbackToLocalizeToCurrentLocale ?? [])
                 ->each(function ($callback) use ($currentLocale) {
                     // Restore the group stack
                     $this->groupStack = $callback['groupStack'];
@@ -96,12 +90,52 @@ class RouteLocalizeMacro implements MacroContract
             Route::getRoutes()->refreshActionLookups();
 
             return $this;
-        });
+        };
     }
 
-    protected static function registerRouteMethodLocalizeMacro(string $method): void
+    public function getLocalized()
     {
-        Route::macro($method . 'Localized', function ($uri, $action = null) use ($method) {
+        return fn ($uri, $action = null) => $this->methodLocalized('get', $uri, $action);
+    }
+    
+    public function postLocalized()
+    {
+        return fn ($uri, $action = null) => $this->methodLocalized('post', $uri, $action);
+    }
+    
+    public function putLocalized()
+    {
+        return fn ($uri, $action = null) => $this->methodLocalized('put', $uri, $action);
+    }
+    
+    public function patchLocalized()
+    {
+        return fn ($uri, $action = null) => $this->methodLocalized('patch', $uri, $action);
+    }
+    
+    public function deleteLocalized()
+    {
+        return fn ($uri, $action = null) => $this->methodLocalized('delete', $uri, $action);
+    }
+    
+    public function optionsLocalized()
+    {
+        return fn ($uri, $action = null) => $this->methodLocalized('options', $uri, $action);
+    }
+    
+    public function anyLocalized()
+    {
+        return fn ($uri, $action = null) => $this->methodLocalized('any', $uri, $action);
+    }
+    
+    public function matchLocalized()
+    {
+        return fn ($uri, $action = null) => $this->methodLocalized('match', $uri, $action);
+    }
+
+    public function methodLocalized()
+    {
+        return function ($method, $uri, $action = null) {
             // Let's obtain the locale
             $locale = null;
             foreach ($this->groupStack as $group) {
@@ -130,6 +164,6 @@ class RouteLocalizeMacro implements MacroContract
             }
 
             return Route::$method($translatedUri, $action);
-        });
+        };
     }
 }

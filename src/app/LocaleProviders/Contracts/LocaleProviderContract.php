@@ -8,5 +8,5 @@ interface LocaleProviderContract
 
     public function getAvailableLocales(bool $caching = false): array;
 
-    public function getLocaleName(string $locale, string $default = null): string;
+    public function getLocaleName(string $locale, ?string $default = null): string;
 }

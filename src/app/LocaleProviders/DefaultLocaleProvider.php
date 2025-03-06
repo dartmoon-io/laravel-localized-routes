@@ -16,7 +16,7 @@ class DefaultLocaleProvider implements LocaleProviderContract
         return array_keys(config('locales.available') ?? []);
     }
 
-    public function getLocaleName(string $locale, string $default = null): string
+    public function getLocaleName(string $locale, ?string $default = null): string
     {
         return config('locales.available')[$locale] ?? $default ?? $locale;
     }

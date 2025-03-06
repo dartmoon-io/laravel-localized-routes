@@ -64,4 +64,3 @@ if (!function_exists('available_alternates')) {
         return app(RouteLocalizationService::class)->getAvailableAlternates();
     }
 }
-

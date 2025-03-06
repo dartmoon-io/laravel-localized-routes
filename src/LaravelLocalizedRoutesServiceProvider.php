@@ -2,9 +2,9 @@
 
 namespace Dartmoon\LaravelLocalizedRoutes;
 
-use Dartmoon\LaravelLocalizedRoutes\App\Macros\RouteLocalizeMacro;
 use Dartmoon\LaravelLocalizedRoutes\App\LocaleProviders\Contracts\LocaleProviderContract;
 use Dartmoon\LaravelLocalizedRoutes\App\LocaleProviders\DefaultLocaleProvider;
+use Dartmoon\LaravelLocalizedRoutes\App\Mixins\RouteLocalizeMixin;
 use Dartmoon\LaravelLocalizedRoutes\App\RouteLocalizationService;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
@@ -14,7 +14,7 @@ class LaravelLocalizedRoutesServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->registerServices();
-        $this->registerMacros();
+        $this->registerMixins();
 
         $this->app->booted(function () {
             $routeLocalizationService = app(RouteLocalizationService::class);
@@ -40,9 +40,9 @@ class LaravelLocalizedRoutesServiceProvider extends ServiceProvider
         $this->app->bind(LocaleProviderContract::class, DefaultLocaleProvider::class);
     }
 
-    protected function registerMacros(): void
+    protected function registerMixins(): void
     {
-        RouteLocalizeMacro::register();
+        Route::mixin(new RouteLocalizeMixin());
     }
 
     protected function setLocaleFromRequest(): void

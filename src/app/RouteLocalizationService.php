@@ -20,7 +20,7 @@ class RouteLocalizationService
         //
     }
 
-    public function localizeRoute(string $name, mixed $parameters = [], string $locale = null, bool $absolute = true): string
+    public function localizeRoute(string $name, mixed $parameters = [], ?string $locale = null, bool $absolute = true): string
     {
         if ($this->app->getLocale() != $locale) {
             $name = $locale . '.' . $name;
@@ -35,7 +35,7 @@ class RouteLocalizationService
         return $localizedRoute;
     }
 
-    public function localizeUrl(string $url, string $locale = null): string
+    public function localizeUrl(string $url, ?string $locale = null): string
     {
         $path = parse_url($url, PHP_URL_PATH);
         $path = ltrim($path, '/');
@@ -61,7 +61,7 @@ class RouteLocalizationService
         return $locale === $this->provider->getDefaultLocale($locale);
     }
 
-    protected function isAValidLocale(string $locale = null): bool
+    protected function isAValidLocale(?string $locale = null): bool
     {
         return !is_null($locale) && in_array($locale, $this->getAvailableLocales());
     }
@@ -76,7 +76,7 @@ class RouteLocalizationService
         return $this->provider->getAvailableLocales($caching);
     }
 
-    public function getLocaleName(string $locale, string $default = null): string
+    public function getLocaleName(string $locale, ?string $default = null): string
     {
         return $this->provider->getLocaleName($locale, $default);
     }
