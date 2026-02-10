@@ -15,18 +15,20 @@ class LaravelLocalizedRoutesServiceProvider extends ServiceProvider
     {
         $this->registerServices();
         $this->registerMixins();
-
-        $this->app->booted(function () {
-            $routeLocalizationService = app(RouteLocalizationService::class);
-            $routeLocalizationService->setLocaleFromRequest();
-
-            Route::registerLocalizedRoutesForLocale(app()->getLocale());
-        });
     }
 
     public function boot(): void
     {
         $this->loadConfigs();
+
+        if (config('localized-routes.register_routes_on_boot')) {
+            $this->app->booted(function () {
+                $routeLocalizationService = app(RouteLocalizationService::class);
+                $routeLocalizationService->setLocaleFromRequest();
+
+                Route::registerLocalizedRoutesForLocale(app()->getLocale());
+            });
+        }
     }
 
     protected function loadConfigs(): void
